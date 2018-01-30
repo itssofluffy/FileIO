@@ -33,7 +33,7 @@ public enum FileIOError: Error {
     case OpenStream(filename: String, mode: FileStreamMode, code: CInt)
     case Close(filename: String, code: CInt)
     case FileNo(filename: String, code: CInt)
-    case Seek(filename: String, to: FileIOPosition, offset: Int, code: CInt)
+    case Seek(filename: String, to: FileIOPosition, offset: off_t, code: CInt)
     case Tell(filename: String, code: CInt)
     case Read(filename: String, code: CInt)
     case EndOfFile(filename: String)

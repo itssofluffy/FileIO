@@ -85,15 +85,6 @@ extension File {
     ///     offset:   The offset from the file position specified.
     ///
     /// - Throws: `FileIOError.Seek`
-#if os(Linux)
-    public func seek(to position: FileIOPosition, offset: Int = 0) throws {
-        precondition(offset >= 0, "offset must be greater than or equal to zero")
-
-        guard (lseek(fileDescriptor, offset, position.rawValue) == 0) else {
-            throw FileIOError.Seek(filename: filename, to: position, offset: offset, code: errno)
-        }
-    }
-#else
     public func seek(to position: FileIOPosition, offset: off_t = 0) throws {
         precondition(offset >= 0, "offset must be greater than or equal to zero")
 
@@ -101,7 +92,6 @@ extension File {
             throw FileIOError.Seek(filename: filename, to: position, offset: offset, code: errno)
         }
     }
-#endif
 }
 
 extension File {

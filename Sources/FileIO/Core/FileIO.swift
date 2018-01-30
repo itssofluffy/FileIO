@@ -42,11 +42,7 @@ public protocol FileIO {
     ///     offset:   The offset from the file position specified.
     ///
     /// - Throws: `FileIOError.Seek`
-#if os(Linux)
-    func seek(to position: FileIOPosition, offset: Int) throws
-#else
     func seek(to position: FileIOPosition, offset: off_t) throws
-#endif
 
     /// Read bytes from file or file stream.
     ///
