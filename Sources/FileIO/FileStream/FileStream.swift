@@ -123,7 +123,11 @@ extension FileStream {
         }
         set {
             wrapper(do: {
+#if os(Linux)
                         try self.seek(to: .Begining, offset: newValue)
+#else
+                        try self.seek(to: .Begining, offset: off_t(newValue))
+#endif
                     },
                     catch: { failure in
                         fileIOErrorLogger(failure)
