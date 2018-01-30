@@ -85,6 +85,7 @@ extension File {
     ///     offset:   The offset from the file position specified.
     ///
     /// - Throws: `FileIOError.Seek`
+#if os(Linux)
     public func seek(to position: FileIOPosition, offset: Int = 0) throws {
         precondition(offset >= 0, "offset must be greater than or equal to zero")
 
@@ -92,6 +93,15 @@ extension File {
             throw FileIOError.Seek(filename: filename, to: position, offset: offset, code: errno)
         }
     }
+#else
+    public func seek(to position: FileIOPosition, offset: off_t = 0) throws {
+        precondition(offset >= 0, "offset must be greater than or equal to zero")
+
+        guard (lseek(fileDescriptor, offset, position.rawValue) == 0) else {
+            throw FileIOError.Seek(filename: filename, to: position, offset: offset, code: errno)
+        }
+    }
+#endif
 }
 
 extension File {
@@ -107,7 +117,11 @@ extension File {
 
         let buffer = Array<Byte>(repeating: 0x00, count: count)
 
+#if os(Linux)
         let numberOfBytes = Glibc.read(fileDescriptor, UnsafeMutablePointer(mutating: buffer), buffer.count)
+#else
+        let numberOfBytes = Darwin.read(fileDescriptor, UnsafeMutablePointer(mutating: buffer), buffer.count)
+#endif
 
         guard (numberOfBytes == buffer.count) else {
             if (numberOfBytes == 0) {
@@ -133,7 +147,13 @@ extension File {
     public func write(_ data: Data) throws {
         precondition(data.count > 0, "data.count must be greater than zero")
 
-        guard (Glibc.write(fileDescriptor, data.bytes, data.count) == data.count) else {
+#if os(Linux)
+        let numberOfBytes = Glibc.write(fileDescriptor, data.bytes, data.count)
+#else
+        let numberOfBytes = Darwin.write(fileDescriptor, data.bytes, data.count)
+#endif
+
+        guard (numberOfBytes == data.count) else {
             throw FileIOError.Write(filename: filename, code: errno)
         }
 
