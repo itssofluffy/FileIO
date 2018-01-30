@@ -1,0 +1,21 @@
+language: generic
+
+matrix:
+  include:
+    # Linux
+    - dist: trusty
+      sudo: false
+
+    # OSX
+    - os: osx
+      osx_image: xcode9.2
+
+install:
+  - eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
+
+cache:
+    directories:
+        - $HOME/.swiftenv
+
+script:
+  - swift build

@@ -1,7 +1,7 @@
 /*
     Package.swift
 
-    Copyright (c) 2017 Stephen Whittle  All rights reserved.
+    Copyright (c) 2017, 2018 Stephen Whittle  All rights reserved.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"),
@@ -22,13 +22,11 @@
 
 import PackageDescription
 
+#if os(Linux) || os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
 let package = Package (
     name: "FileIO",
     dependencies: [
-        .Package (
-            url:          "https://github.com/itssofluffy/ISFLibrary.git",
-            majorVersion: 0
-        )
+        .Package(url: "https://github.com/itssofluffy/ISFLibrary.git", majorVersion: 0)
     ]
 )
 
@@ -38,11 +36,7 @@ let staticLibrary = Product (
     modules: ["FileIO"]
 )
 
-let dynamicLibrary = Product (
-    name:    "FileIO",
-    type:    .Library(.Dynamic),
-    modules: ["FileIO"]
-)
-
 products.append(staticLibrary)
-products.append(dynamicLibrary)
+#else
+fatalError("Unsupported OS")
+#endif
