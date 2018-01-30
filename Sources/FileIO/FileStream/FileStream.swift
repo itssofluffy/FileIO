@@ -112,7 +112,7 @@ extension FileStream {
 }
 
 extension FileStream {
-    public var position: off_t {
+    public var position: Int {
         get {
             return wrapper(do: {
                                return try self.tell()
@@ -153,7 +153,13 @@ extension FileStream {
     public func seek(to position: FileIOPosition, offset: off_t = 0) throws {
         precondition(offset >= 0, "offset must be greater than or equal to zero")
 
-        guard (fseek(filePointer, offset, position.rawValue) == 0) else {
+#if os(Linux)
+        let returnCode = fseek(filePointer, offset, position.rawValue)
+#else
+        let returnCode = fseek(filePointer, Int(offset), position.rawValue)
+#endif
+
+        guard (returnCode == 0) else {
             throw FileIOError.Seek(filename: filename, to: position, offset: offset, code: errno)
         }
     }
